@@ -54,29 +54,38 @@ function updateModalView(candidateId) {
   var candidate = matchedCandidates.find(x => x.angel_id === candidateId);
   console.log(candidate);
   if (candidate != undefined) {
-    if(candidate["assessments"].length > 1){
-      $(".mfp-content [data-candidate-id="+ candidate['angel_id'] +"] .js-profile-details").append('<div style="width: 100%; display: table; width: 100%;"> \
-        <div style="display: inline-block; width: 54px; vertical-align: middle;"> \
-          <img style="width: 46px;" src="'+chrome.extension.getURL("images/qualified-icon.jpg")+'"> \
+    $(".mfp-content [data-candidate-id="+ candidate['angel_id'] +"] .js-profile-details .info").prepend('<div class="assess details-row"> \
+      <div class="s-flexgrid s-flexgrid--fixed"> \
+        <div class="s-flexgrid--width2 s-flexgrid-colSm u-colorGrayA u-fontSize12 u-uppercase"> \
+          Assess \
         </div> \
-        <div style=" display: inline-block; vertical-align: middle; color: #00a466; font-size: 15px;"> \
+        <div class="assess-results collapsed-value s-flexgrid-colSmW s-vgPadLeft1 u-fontSize13"> \
+        </div> \
+      </div> \
+    </div> ');
+    if(candidate["assessments"].length > 1){
+      $(".assess .assess-results").append('<div style="width: 100%; display: table; width: 100%;"> \
+        <div style="display: inline-block; width: 54px; vertical-align: middle;"> \
+          <img style="width: 40px;" src="'+chrome.extension.getURL("images/qualified-icon.jpg")+'"> \
+        </div> \
+        <div style=" display: inline-block; vertical-align: middle; color: #00a466; font-size: 100%;"> \
           <i class="fa fa-check-circle" aria-hidden="true"></i> '+ titleize(candidate['state']) +' \
         </div>  </div>');
       $.each( candidate["assessments"], function( i, ob ) {
         var score = ob["score"] == null ? "0" : ob["score"];
-        $(".mfp-content [data-candidate-id="+ candidate['angel_id'] +"] .js-profile-details").append(' <div style="padding: 4px; width: 100%; display: table; width: 100%;"> \
+        $(".assess .assess-results").append(' <div style="padding: 4px; width: 100%; display: table; width: 100%;"> \
           <div style="font-weight: 600; display: inline-block; text-align: center; width: 30px; border-radius: 25px; border: 2px solid #00a466; padding: 5px; display: inline-block; vertical-align: middle;"> '+ score +'%</div> \
-          <div style=" display: inline-block; vertical-align: middle; font-size: 15px; margin-left: 10px;"> \
+          <div style=" display: inline-block; vertical-align: middle; font-size: 100%; margin-left: 10px;"> \
             '+ titleize(ob['title']) +' \
           </div> </div>').slideDown();
       });
     } else {
       var score = candidate["assessments"][0]["score"] == null ? "0" : candidate["assessments"][0]["score"];
-      $(".mfp-content [data-candidate-id="+ candidate['angel_id'] +"] .js-profile-details").append('<div style="width: 100%; display: table; width: 100%;"> \
+      $(".assess .assess-results").append('<div style="width: 100%; display: table; width: 100%;"> \
         <div style="display: inline-block; width: 54px; vertical-align: middle;"> \
-          <img style="width: 46px;" src="'+chrome.extension.getURL("images/qualified-icon.jpg")+'"> \
+          <img style="width: 40px;" src="'+chrome.extension.getURL("images/qualified-icon.jpg")+'"> \
         </div> \
-        <div style=" display: inline-block; vertical-align: middle; color: #00a466; font-size: 15px;"> \
+        <div style=" display: inline-block; vertical-align: middle; color: #00a466; font-size: 100%;"> \
           <i class="fa fa-check-circle" aria-hidden="true"></i> '+ titleize(candidate['state']) +' \
         </div> \
         <div style="font-weight: 600; border-radius: 25px; border: 2px solid #00a466; padding: 5px; display: inline-block; vertical-align: middle; float: right; margin: 9px 8px 0 0;">'+ score +'%</div>'
@@ -108,16 +117,16 @@ function updateCandidates(data) {
     if(obj["assessments"].length > 1){
       $("[data-candidate_id="+ obj['angel_id'] +"]").append('<div class="assessments" style="width: 100%; display: table; width: 100%;"> \
         <div style="display: inline-block; width: 54px; vertical-align: middle;"> \
-          <img style="width: 46px;" src="'+chrome.extension.getURL("images/qualified-icon.jpg")+'"> \
+          <img style="width: 40px;" src="'+chrome.extension.getURL("images/qualified-icon.jpg")+'"> \
         </div> \
-        <div style=" display: inline-block; vertical-align: middle; color: #00a466; font-size: 15px;"> \
+        <div style=" display: inline-block; vertical-align: middle; color: #00a466; font-size: 100%;"> \
           <i class="fa fa-check-circle" aria-hidden="true"></i> '+ titleize(obj['state']) +' \
         </div>  </div>');
       $.each( obj["assessments"], function( i, ob ) {
         var score = ob["score"] == null ? "0" : ob["score"];
         $("[data-candidate_id="+ obj['angel_id'] +"]").append(' <div style="padding: 4px; width: 100%; display: table; width: 100%;"> \
           <div style="font-weight: 600; display: inline-block; text-align: center; width: 30px; border-radius: 25px; border: 2px solid #00a466; padding: 5px; display: inline-block; vertical-align: middle;"> '+ score +'%</div> \
-          <div style=" display: inline-block; vertical-align: middle; font-size: 15px; margin-left: 10px;"> \
+          <div style=" display: inline-block; vertical-align: middle; font-size: 100%; margin-left: 10px;"> \
             '+ titleize(ob['title']) +' \
           </div> </div>').slideDown();
       });
@@ -125,9 +134,9 @@ function updateCandidates(data) {
       var score = obj["assessments"][0]["score"] == null ? "0" : obj["assessments"][0]["score"];
       $("[data-candidate_id="+ obj['angel_id'] +"]").append('<div style="width: 100%; display: table; width: 100%;"> \
         <div style="display: inline-block; width: 54px; vertical-align: middle;"> \
-          <img style="width: 46px;" src="'+chrome.extension.getURL("images/qualified-icon.jpg")+'"> \
+          <img style="width: 40px;" src="'+chrome.extension.getURL("images/qualified-icon.jpg")+'"> \
         </div> \
-        <div style=" display: inline-block; vertical-align: middle; color: #00a466; font-size: 15px;"> \
+        <div style=" display: inline-block; vertical-align: middle; color: #00a466; font-size: 100%;"> \
           <i class="fa fa-check-circle" aria-hidden="true"></i> '+ titleize(obj['state']) +' \
         </div> \
         <div style="font-weight: 600; border-radius: 25px; border: 2px solid #00a466; padding: 5px; display: inline-block; vertical-align: middle; float: right; margin: 9px 8px 0 0;">'+ score +'%</div>'
