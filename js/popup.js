@@ -18,6 +18,7 @@ function trackCandidatesListing() {
     if (candidatesArray.length != 0) {
       clearInterval(refreshIntervalId);
       console.log(candidatesArray);
+      candidatesArray = extractCandidates();
       matchCandidates();
     } else {
       candidatesArray = extractCandidates();
