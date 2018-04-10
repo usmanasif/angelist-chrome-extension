@@ -4,7 +4,7 @@
   "name": "AngelList Chrome Extension",
   "description": "AngelList Chrome Extension",
   "version": "1.0",
-  "web_accessible_resources": ["images/qualified-icon.jpg", "js/fontawesome.js"],
+  "web_accessible_resources": ["images/qualified-icon.jpg"],
 
   "browser_action": {
    "default_icon": "images/angellist.png",
@@ -13,7 +13,7 @@
   "content_scripts": [
     {
       "matches": ["https://angel.co/*/track/*", "https://angel.co/*/track", "https://angel.co/*/track/"],
-      "js": ["js/jquery-3.3.1.min.js", "js/popup.js"]
+      "js": ["js/jquery-3.3.1.min.js", "js/popup.js", "js/fontawesome.js"]
     }
   ],
   "permissions": [
