@@ -1,19 +1,88 @@
-var baseUrl = "http://localhost:3000/v1/angels/match_candidates";
+var baseUrl = "http://localhost:3000/v1/angel/match";
 var candidatesArray = [];
+var matchedCandidates = [];
 var refreshIntervalId;
+var refreshIntervalInfo;
+var candidateId = "";
 
 function onInit(){
   $(window).on('load', function(){
-    refreshIntervalId = setInterval(function(){
-      if (candidatesArray.length != 0) {
-        clearInterval(refreshIntervalId);
-        console.log(candidatesArray);
-        matchCandidates();
-      } else {
-        candidatesArray = extractCandidates();
-      }
-    }, 2000);
+    trackCandidatesListing();
+    trackDetailView();
   });
+}
+
+// track if candidates are listed
+function trackCandidatesListing() {
+  refreshIntervalId = setInterval(function(){
+    if (candidatesArray.length != 0) {
+      clearInterval(refreshIntervalId);
+      console.log(candidatesArray);
+      matchCandidates();
+    } else {
+      candidatesArray = extractCandidates();
+    }
+  }, 2000);
+}
+
+// track details view
+function trackDetailView() {
+  $(document).on("click", ".card, .mfp-arrow", function(){
+    candidateId = "";
+    // modalCheck();
+  });
+}
+
+// check if modal is opened
+function modalCheck() {
+  refreshIntervalInfo = setInterval(function(){
+    console.log(candidateId);
+    if (candidatesArray.length != 0 && candidateId != "") {
+      clearInterval(refreshIntervalInfo);
+      updateModalView(candidateId);
+    }
+    else {
+      if($(".mfp-content").is(":visible")){
+        candidateId = $(".mfp-content [data-candidate-id]").attr("data-candidate-id");
+      }
+    }
+  }, 1000);
+}
+
+// update assessments in modal
+function updateModalView(candidateId) {
+  var candidate = matchedCandidates.find(x => x.angel_id === candidateId);
+  console.log(candidate);
+  if (candidate != undefined) {
+    if(candidate["assessments"].length > 1){
+      $(".mfp-content [data-candidate-id="+ candidate['angel_id'] +"] .js-profile-details").append('<div style="width: 100%; display: table; width: 100%;"> \
+        <div style="display: inline-block; width: 54px; vertical-align: middle;"> \
+          <img style="width: 46px;" src="'+chrome.extension.getURL("images/qualified-icon.jpg")+'"> \
+        </div> \
+        <div style=" display: inline-block; vertical-align: middle; color: #00a466; font-size: 15px;"> \
+          <i class="fa fa-check-circle" aria-hidden="true"></i> '+ titleize(candidate['state']) +' \
+        </div>  </div>');
+      $.each( candidate["assessments"], function( i, ob ) {
+        var score = ob["score"] == null ? "0" : ob["score"];
+        $(".mfp-content [data-candidate-id="+ candidate['angel_id'] +"] .js-profile-details").append(' <div style="padding: 4px; width: 100%; display: table; width: 100%;"> \
+          <div style="font-weight: 600; display: inline-block; text-align: center; width: 30px; border-radius: 25px; border: 2px solid #00a466; padding: 5px; display: inline-block; vertical-align: middle;"> '+ score +'%</div> \
+          <div style=" display: inline-block; vertical-align: middle; font-size: 15px; margin-left: 10px;"> \
+            '+ titleize(ob['title']) +' \
+          </div> </div>').slideDown();
+      });
+    } else {
+      var score = candidate["assessments"][0]["score"] == null ? "0" : candidate["assessments"][0]["score"];
+      $(".mfp-content [data-candidate-id="+ candidate['angel_id'] +"] .js-profile-details").append('<div style="width: 100%; display: table; width: 100%;"> \
+        <div style="display: inline-block; width: 54px; vertical-align: middle;"> \
+          <img style="width: 46px;" src="'+chrome.extension.getURL("images/qualified-icon.jpg")+'"> \
+        </div> \
+        <div style=" display: inline-block; vertical-align: middle; color: #00a466; font-size: 15px;"> \
+          <i class="fa fa-check-circle" aria-hidden="true"></i> '+ titleize(candidate['state']) +' \
+        </div> \
+        <div style="font-weight: 600; border-radius: 25px; border: 2px solid #00a466; padding: 5px; display: inline-block; vertical-align: middle; float: right; margin: 9px 8px 0 0;">'+ score +'%</div>'
+        ).slideDown();
+    }
+  }
 }
 
 // extarct candidates data from page
@@ -36,8 +105,24 @@ function extractCandidates(){
 function updateCandidates(data) {
   $.each( data, function( index, obj ) {
     console.log(obj);
-    $.each( obj["assessments"], function( i, ob ) {
-      var score = ob["score"] == null ? "0" : ob["score"];
+    if(obj["assessments"].length > 1){
+      $("[data-candidate_id="+ obj['angel_id'] +"]").append('<div class="assessments" style="width: 100%; display: table; width: 100%;"> \
+        <div style="display: inline-block; width: 54px; vertical-align: middle;"> \
+          <img style="width: 46px;" src="'+chrome.extension.getURL("images/qualified-icon.jpg")+'"> \
+        </div> \
+        <div style=" display: inline-block; vertical-align: middle; color: #00a466; font-size: 15px;"> \
+          <i class="fa fa-check-circle" aria-hidden="true"></i> '+ titleize(obj['state']) +' \
+        </div>  </div>');
+      $.each( obj["assessments"], function( i, ob ) {
+        var score = ob["score"] == null ? "0" : ob["score"];
+        $("[data-candidate_id="+ obj['angel_id'] +"]").append(' <div style="padding: 4px; width: 100%; display: table; width: 100%;"> \
+          <div style="font-weight: 600; display: inline-block; text-align: center; width: 30px; border-radius: 25px; border: 2px solid #00a466; padding: 5px; display: inline-block; vertical-align: middle;"> '+ score +'%</div> \
+          <div style=" display: inline-block; vertical-align: middle; font-size: 15px; margin-left: 10px;"> \
+            '+ titleize(ob['title']) +' \
+          </div> </div>').slideDown();
+      });
+    } else {
+      var score = obj["assessments"][0]["score"] == null ? "0" : obj["assessments"][0]["score"];
       $("[data-candidate_id="+ obj['angel_id'] +"]").append('<div style="width: 100%; display: table; width: 100%;"> \
         <div style="display: inline-block; width: 54px; vertical-align: middle;"> \
           <img style="width: 46px;" src="'+chrome.extension.getURL("images/qualified-icon.jpg")+'"> \
@@ -45,36 +130,39 @@ function updateCandidates(data) {
         <div style=" display: inline-block; vertical-align: middle; color: #00a466; font-size: 15px;"> \
           <i class="fa fa-check-circle" aria-hidden="true"></i> '+ titleize(obj['state']) +' \
         </div> \
-        <div style="border-radius: 25px; border: 2px solid #00a466; padding: 5px; display: inline-block; vertical-align: middle; float: right; margin: 9px 8px 0 0;">'+ score +'%</div>'
-        );
-    });
+        <div style="font-weight: 600; border-radius: 25px; border: 2px solid #00a466; padding: 5px; display: inline-block; vertical-align: middle; float: right; margin: 9px 8px 0 0;">'+ score +'%</div>'
+        ).slideDown();
+    }
   });
 }
+
 
 function titleize(sentence) {
   if(!sentence.split) return sentence;
   var _titleizeWord = function(string) {
-          return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
-      },
-      result = [];
+      return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+    },
+  result = [];
   sentence.split(" ").forEach(function(w) {
-      result.push(_titleizeWord(w));
+    result.push(_titleizeWord(w));
   });
   return result.join(" ");
 }
 
 // send request to api and match candidates
 function matchCandidates() {
-  $.post( baseUrl,
-    {
-      candidates: JSON.stringify(candidatesArray)
-    },
-    function(data, status){
-      if (data.length != 0) {
-        updateCandidates(data);
+  $.ajax({
+    url: baseUrl,
+    type: 'PUT',
+    data: {candidates: JSON.stringify(candidatesArray)},
+    success: function(result) {
+      if (result.length != 0) {
+        matchedCandidates = result;
+        updateCandidates(result);
       } else {
         console.log("No data found!");
       }
+    }
   });
 }
 

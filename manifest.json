@@ -10,6 +10,12 @@
    "default_icon": "images/angellist.png",
    "default_popup": "popup.html"
   },
+  "content_scripts": [
+    {
+      "matches": ["https://angel.co/*/track/*", "https://angel.co/*/track", "https://angel.co/*/track/"],
+      "js": ["js/jquery-3.3.1.min.js", "js/popup.js", "js/fontawesome.js"]
+    }
+  ],
   "permissions": [
     "tabs",
     "activeTab",
@@ -18,11 +24,5 @@
   "background":{
     "scripts": ["js/jquery-3.3.1.min.js", "js/background.js"],
     "persistent": true
-  },
-  "content_scripts": [
-    {
-      "matches": ["https://angel.co/*/track/*", "https://angel.co/*/track", "https://angel.co/*/track/"],
-      "js": ["js/jquery-3.3.1.min.js", "js/popup.js", "js/fontawesome.js"]
-    }
-  ]
+  }
 }
